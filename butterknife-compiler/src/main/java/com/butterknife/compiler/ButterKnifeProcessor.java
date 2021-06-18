@@ -35,6 +35,9 @@ import javax.tools.Diagnostic;
  * Email: hydznsqk@163.com
  * Des:在编译时用来生成BindView标记的注解的代码
  */
+//@AutoService 这个注解能帮助我们自动注册，对应com.google.auto.service:auto-service:1.0-rc2如果不使用这个注解的话，需要手动去注册，
+// 步骤是，在butterKnife-compilermodule的main目录下创建resources/META-INF/services文件夹，
+// 再创建javax.annotation.processing.Processor文件，文件中写BindViewProcessor的全类名
 @AutoService(Processor.class)
 public class ButterKnifeProcessor extends AbstractProcessor {
 
@@ -51,7 +54,10 @@ public class ButterKnifeProcessor extends AbstractProcessor {
         messager.printMessage(Diagnostic.Kind.NOTE, "=========init============");
     }
 
-    // 1. 指定处理的版本
+    /**
+     * 1.指定处理的版本
+     * 支持的jdk版本,一般返回支持的最新的
+     */
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
@@ -67,6 +73,13 @@ public class ButterKnifeProcessor extends AbstractProcessor {
         return types;
     }
 
+    /**
+     * 能处理的注解类型，里面接受的是一个注解，说明可以同时处理多个，butterknife就是支持多个，
+     * 同时处理BindView和OnClick注解，如果不使用注解的话，
+     * 你也可以重写getSupportedAnnotationTypes方法,getSupportedAnnotationTypes返回的是一个set<String>集合，里面添加需要处理的集合信息
+     *
+     * @return
+     */
     private Set<Class<? extends Annotation>> getSupportedAnnotations() {
         Set<Class<? extends Annotation>> annotations = new LinkedHashSet<>();
         // 需要解析的自定义注解 BindView  OnClick
